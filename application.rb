@@ -1,5 +1,8 @@
 # application.rb
 require 'grape'
+require 'mongoid'
+
+Mongoid.load! "config/mongoid.config"
 
 # Load files from the models and api folders
 Dir["#{File.dirname(__FILE__)}/app/models/**/*.rb"].each { |f| require f }
