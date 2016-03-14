@@ -5,3 +5,8 @@ gem 'grape'
 gem 'mongoid', '~> 5.0.0'
 gem 'pry-byebug'
 gem 'shotgun'
+
+gem 'rspec'
+gem 'rack-test'
+gem 'factory_girl'
+gem 'mongoid_cleaner'

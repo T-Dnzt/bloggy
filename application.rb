@@ -7,6 +7,7 @@ Mongoid.load! "config/mongoid.config"
 # Load files from the models and api folders
 Dir["#{File.dirname(__FILE__)}/app/models/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/app/api/**/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/app/yumi/**/*.rb"].each { |f| require f }
 
 # Grape API class. We will inherit from it in our future controllers.
 module API
