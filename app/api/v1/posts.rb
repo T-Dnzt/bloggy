@@ -7,8 +7,8 @@ module API
       resources :posts do
 
         desc 'Returns all posts'
-        get do
-          Post.all.ordered
+        get '/' do
+          Presenters::Post.new(base_url, Post.all.ordered).as_json_api
         end
 
         desc "Return a specific post"
@@ -16,7 +16,7 @@ module API
           requires :id, type: String
         end
         get ':id' do
-          Post.find(params[:id])
+          Presenters::Post.new(base_url, Post.find(params[:id])).as_json_api
         end
 
       end

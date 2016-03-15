@@ -1,3 +1,4 @@
+# app/api/v1/comments.rb
 module API
   module V1
     class Comments < Grape::API
@@ -16,12 +17,13 @@ module API
           end
           post do
             post = Post.find(params[:post_id])
-            post.comments.create!({
+            comment = post.comments.create!({
               author: params[:author],
               email: params[:email],
               website: params[:website],
               content: params[:content]
             })
+            Presenters::Comment.new(base_url, comment).as_json_api
           end
 
           desc 'Update a comment.'
@@ -34,12 +36,16 @@ module API
           end
           put ':id' do
             post = Post.find(params[:post_id])
-            post.comments.find(params[:id]).update!({
-              author: params[:author],
-              email: params[:email],
+            comment = post.comments.find(params[:id])
+
+            comment.update!({
+              author:  params[:author],
+              email:   params[:email],
               website: params[:website],
               content: params[:content]
             })
+
+            Presenters::Comment.new(base_url, comment.reload).as_json_api
           end
 
           desc 'Delete a comment.'
