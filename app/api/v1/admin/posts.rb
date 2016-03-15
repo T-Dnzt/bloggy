@@ -7,6 +7,12 @@ module API
 
         namespace :admin do
 
+          helpers do
+            def base_url
+              "http://#{request.host}:#{request.port}/api/#{version}/admin"
+            end
+          end
+
           resources :posts do
 
             desc 'Returns all posts'

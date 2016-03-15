@@ -4,16 +4,28 @@ require 'mongoid'
 
 Mongoid.load! "config/mongoid.config"
 
+META_DATA = {
+  name: 'Bloggy',
+  description: 'A simple blogging API built with Grape.'
+}
+
 # Load files from the models and api folders
 Dir["#{File.dirname(__FILE__)}/app/models/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/app/api/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/app/yumi/**/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/app/presenters/**/*.rb"].each {|f| require f}
 
 # Grape API class. We will inherit from it in our future controllers.
 module API
   class Root < Grape::API
     format :json
     prefix :api
+
+    helpers do
+      def base_url
+        "http://#{request.host}:#{request.port}/api/#{version}"
+      end
+    end
 
     # Simple endpoint to get the current status of our API.
     get :status do
