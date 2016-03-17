@@ -1,6 +1,7 @@
 # application.rb
 require 'grape'
 require 'mongoid'
+require 'hashie-forbidden_attributes'
 
 Mongoid.load! "config/mongoid.config"
 
