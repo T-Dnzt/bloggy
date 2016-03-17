@@ -6,6 +6,7 @@ ENV['RACK_ENV'] = 'test'
 require 'ostruct'
 require 'factory_girl'
 require 'mongoid_cleaner'
+require 'rack/test'
 
 # We need to load our application
 require_relative '../application.rb'
