@@ -10,47 +10,48 @@ module API
 
           desc 'Create a comment.'
           params do
-            requires :author, type: String
-            requires :email, type: String
-            requires :website, type: String
-            requires :content, type: String
+            requires :post_id, type: String
+            requires :data, type: Hash do
+              requires :type, type: String
+              requires :attributes, type: Hash do
+                requires :author, type: String
+                optional :email, type: String
+                optional :website, type: String
+                requires :content, type: String
+              end
+            end
           end
           post do
             post = Post.find(params[:post_id])
-            comment = post.comments.create!({
-              author: params[:author],
-              email: params[:email],
-              website: params[:website],
-              content: params[:content]
-            })
+            comment = post.comments.create!(declared(params)['data']['attributes'])
             Presenters::Comment.new(base_url, comment).as_json_api
           end
 
           desc 'Update a comment.'
           params do
-            requires :id, type: String
-            requires :author, type: String
-            requires :email, type: String
-            requires :website, type: String
-            requires :content, type: String
+            requires :post_id, type: String
+            requires :id
+            requires :data, type: Hash do
+              requires :type, type: String
+              requires :attributes, type: Hash do
+                optional :author, type: String
+                optional :email, type: String
+                optional :website, type: String
+                optional :content, type: String
+              end
+            end
           end
-          put ':id' do
+          patch ':id' do
             post = Post.find(params[:post_id])
             comment = post.comments.find(params[:id])
-
-            comment.update!({
-              author:  params[:author],
-              email:   params[:email],
-              website: params[:website],
-              content: params[:content]
-            })
-
+            comment_params = declared(params)['data']['attributes'].reject { |k, v| v.nil? }
+            comment.update_attributes!(comment_params)
             Presenters::Comment.new(base_url, comment.reload).as_json_api
           end
 
           desc 'Delete a comment.'
           params do
-            requires :id, type: String, desc: 'Status ID.'
+            requires :id, type: String
           end
           delete ':id' do
             post = Post.find(params[:post_id])
