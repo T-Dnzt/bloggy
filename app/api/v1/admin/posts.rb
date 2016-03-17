@@ -17,7 +17,7 @@ module API
 
             desc 'Returns all posts'
             get do
-              Post.all.ordered
+              Presenters::Post.new(base_url, Post.all.ordered).as_json_api
             end
 
             desc "Return a specific post"
@@ -25,33 +25,43 @@ module API
               requires :id, type: String
             end
             get ':id' do
-              Post.find(params[:id])
+              Presenters::Post.new(base_url, Post.find(params[:id])).as_json_api
             end
 
             desc "Create a new post"
             params do
-              requires :slug, type: String
-              requires :title, type: String
-              requires :content, type: String
+              requires :data, type: Hash do
+                requires :type, type: String
+                requires :attributes, type: Hash do
+                  requires :slug, type: String
+                  requires :title, type: String
+                  optional :content, type: String
+                end
+              end
             end
             post do
-              Post.create!(slug: params[:slug],
-                                   title: params[:title],
-                                   content: params[:content])
+              post = Post.create!(declared(params)['data']['attributes'])
+              Presenters::Post.new(base_url, post).as_json_api
             end
 
             desc "Update a post"
             params do
               requires :id, type: String
-              requires :slug, type: String
-              requires :title, type: String
-              requires :content, type: String
+              requires :data, type: Hash do
+                requires :type, type: String
+                requires :id, type: String
+                requires :attributes, type: Hash do
+                  optional :slug, type: String
+                  optional :title, type: String
+                  optional :content, type: String
+                end
+              end
             end
-            put ':id' do
+            patch ':id' do
               post = Post.find(params[:id])
-              post.update(slug: params[:slug],
-                          title: params[:title],
-                          content: params[:content])
+              post_params = declared(params)['data']['attributes'].reject { |k, v| v.nil? }
+              post.update_attributes!(post_params)
+              Presenters::Post.new(base_url, post.reload).as_json_api
             end
 
             desc "Delete a post"
@@ -65,6 +75,7 @@ module API
           end
         end
       end
+
     end
   end
 end
